@@ -1,0 +1,173 @@
+/* talent feature スコープのスタイル。DESIGN.md準拠（横罫のみテーブル・角丸控えめ・影なし）。 */
+
+.section-header-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.section-header-row > h2 {
+  margin: 0;
+  border-left: 4px solid var(--accent);
+  padding-left: var(--space-sm);
+}
+
+.employee-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.employee-table th {
+  text-align: left;
+  font-weight: 650;
+  color: var(--ink-soft);
+  padding: var(--space-sm);
+  border-bottom: 1px solid var(--line);
+}
+
+.employee-table td {
+  padding: var(--space-sm);
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.employee-table tbody tr {
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.employee-table tbody tr:has(.employee-name-button:hover),
+.employee-table tbody tr:has(.employee-name-button:focus-visible) {
+  background: var(--accent-soft);
+}
+
+.employee-name-cell {
+  padding: 0 !important;
+}
+
+.employee-name-button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  padding: var(--space-sm);
+}
+
+.employee-name-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.skill-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3em;
+}
+
+.employee-form {
+  margin-bottom: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.employee-form h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+}
+
+.form-field > span:first-child {
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.form-field legend {
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+  padding: 0;
+}
+
+fieldset.form-field {
+  border: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.form-row > .form-field {
+  flex: 1 1 200px;
+}
+
+.skill-row {
+  display: grid;
+  grid-template-columns: 2fr 0.8fr 1fr auto;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.delete-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-left: auto;
+  color: var(--danger);
+  font-size: 0.8125rem;
+}
+
+.import-export-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.import-result ul {
+  margin: 0.3em 0 0;
+  padding-left: 1.2em;
+}
+
+.format-help {
+  margin-top: var(--space-sm);
+  color: var(--ink-soft);
+  font-size: 0.8125rem;
+}
+
+.format-help ul {
+  padding-left: 1.2em;
+}
+
+@media (max-width: 800px) {
+  .skill-row {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      'name name'
+      'years level'
+      'remove remove';
+  }
+}

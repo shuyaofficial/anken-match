@@ -1,0 +1,31 @@
+:root {
+  /* 内容抽出（anken-match） — DESIGN.md フロントマター準拠。ライトテーマ単一。 */
+  --surface: oklch(98.5% 0.003 250);
+  --surface-raised: #ffffff;
+  --ink: oklch(22% 0.01 250);
+  --ink-soft: oklch(48% 0.012 250);
+  --line: oklch(90% 0.006 250);
+  --accent: oklch(44% 0.1 250);
+  --accent-soft: oklch(94% 0.02 250);
+  --match-strong: oklch(52% 0.12 155);
+  --match-mid: oklch(62% 0.13 80);
+  --match-weak: oklch(60% 0.02 250);
+  --danger: oklch(52% 0.17 25);
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-pill: 999px;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Yu Gothic',
+    sans-serif;
+
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}

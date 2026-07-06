@@ -1,0 +1,237 @@
+@import './styles/tokens.css';
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  line-height: 1.35;
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: 16px; /* iOSのズーム防止 */
+  color: var(--ink);
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.7rem;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* 数値用ユーティリティ — スコア・単価・年数などは必ずこれを付与する */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- 共通シェル部品 --- */
+
+.app-shell {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg) calc(var(--space-xl) + env(safe-area-inset-bottom));
+}
+
+.app-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-sm) var(--space-lg);
+  padding: var(--space-lg) 0 var(--space-md);
+  border-bottom: 1px solid var(--line);
+}
+
+.app-title {
+  font-size: clamp(24px, 3.2vw, 32px);
+  letter-spacing: 0.01em;
+}
+
+.tab-nav {
+  display: flex;
+  gap: 0.25rem;
+  margin-left: auto;
+  overflow-x: auto;
+}
+
+.tab-nav button {
+  background: transparent;
+  border: none;
+  color: var(--ink-soft);
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.tab-nav button:hover {
+  background: var(--accent-soft);
+}
+
+.tab-nav button.active {
+  color: var(--surface-raised);
+  background: var(--accent);
+}
+
+.section {
+  margin-top: var(--space-xl);
+}
+
+.section > h2 {
+  font-size: 18px;
+  border-left: 4px solid var(--accent);
+  padding-left: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+/* 面の区別は明度差＋1px罫線のみ。影は使わない */
+.card {
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: var(--surface-raised);
+  padding: 0.45rem 1rem;
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-quiet {
+  background: transparent;
+  color: var(--accent);
+}
+
+.btn-quiet:hover {
+  background: var(--accent-soft);
+}
+
+.btn-danger {
+  background: transparent;
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.btn-danger:hover {
+  background: color-mix(in oklch, var(--danger) 12%, var(--surface-raised));
+}
+
+.note {
+  color: var(--ink-soft);
+  font-size: 0.8125rem;
+}
+
+.error-note {
+  color: var(--danger);
+  background: color-mix(in oklch, var(--danger) 8%, var(--surface-raised));
+  border-radius: var(--radius-sm);
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 0.8125rem;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--ink-soft);
+  padding: var(--space-xl) var(--space-sm);
+}
+
+.empty-state p {
+  margin: 0 0 var(--space-md);
+}
+
+.skill-tag {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 0.15rem 0.7rem;
+  font-size: 0.8125rem;
+}
+
+.skill-tag.required {
+  border: 1px solid var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* スクリーンリーダー専用テキスト（見出しアウトライン用） */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 幅の狭い画面ではテーブルを枠内横スクロールにする（ページ全体を歪ませない） */
+.table-scroll {
+  overflow-x: auto;
+}

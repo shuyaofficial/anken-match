@@ -1,0 +1,135 @@
+/* matching feature スコープのスタイル。DESIGN.md準拠（スコアバッジ=数値+三段階色、影なし）。 */
+
+.match-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.match-panel-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.include-assigned-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.missing-key-notice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.candidate-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.candidate-card {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.candidate-card:last-child {
+  border-bottom: none;
+}
+
+.candidate-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.candidate-rank {
+  color: var(--ink-soft);
+  font-size: 0.8125rem;
+  min-width: 1.4em;
+}
+
+.candidate-name {
+  font-weight: 650;
+  flex: 1;
+}
+
+.score-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.4em;
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--radius-pill);
+  font-weight: 650;
+  color: #fff;
+}
+
+.score-badge--strong {
+  background: var(--match-strong);
+}
+
+.score-badge--mid {
+  background: var(--match-mid);
+}
+
+.score-badge--weak {
+  background: var(--match-weak);
+}
+
+.skill-tag--missing {
+  background: transparent;
+  color: var(--danger);
+  text-decoration: line-through;
+  text-decoration-color: var(--danger);
+  border: 1px solid var(--line);
+}
+
+.candidate-breakdown-toggle {
+  align-self: flex-start;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.8125rem;
+}
+
+.candidate-breakdown {
+  display: flex;
+  gap: var(--space-lg);
+  margin: 0;
+}
+
+.candidate-breakdown > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1em;
+}
+
+.candidate-breakdown dt {
+  font-size: 0.75rem;
+}
+
+.candidate-breakdown dd {
+  margin: 0;
+  font-weight: 650;
+  color: var(--ink);
+}
+
+.candidate-rationale {
+  margin: 0;
+  padding: var(--space-sm);
+  background: var(--accent-soft);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+}

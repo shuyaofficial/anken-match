@@ -1,0 +1,67 @@
+/* proposals feature スコープのスタイル。DESIGN.md準拠（影なし・罫線と余白で階層）。 */
+
+.project-detail-section-divider {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--line);
+}
+
+.project-detail-section-title {
+  font-size: 18px;
+  margin-bottom: var(--space-md);
+}
+
+.proposal-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.proposal-candidate-select {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.proposal-candidate-select select {
+  color: var(--ink);
+}
+
+.proposal-draft {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--line);
+}
+
+.proposal-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.proposal-field textarea {
+  color: var(--ink);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  resize: vertical;
+}
+
+.proposal-copy-row,
+.proposal-save-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.missing-key-notice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}

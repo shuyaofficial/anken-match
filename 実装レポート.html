@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>実装レポート — 内容抽出（anken-match）</title>
+<style>
+  :root {
+    --surface: oklch(98.5% 0.003 250);
+    --surface-raised: #fff;
+    --ink: oklch(22% 0.01 250);
+    --ink-soft: oklch(48% 0.012 250);
+    --line: oklch(90% 0.006 250);
+    --accent: oklch(44% 0.10 250);
+    --accent-soft: oklch(94% 0.02 250);
+    --match-strong: oklch(52% 0.12 155);
+    --match-mid: oklch(62% 0.13 80);
+    --danger: oklch(52% 0.17 25);
+    --font-sans: -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--surface);
+    color: var(--ink);
+    line-height: 1.75;
+    font-size: 15px;
+  }
+  main { max-width: 880px; margin: 0 auto; padding: 40px 24px 80px; }
+  header.hero { border-bottom: 1px solid var(--line); padding-bottom: 24px; margin-bottom: 40px; }
+  .hero h1 { font-size: clamp(26px, 3.2vw, 34px); font-weight: 700; letter-spacing: 0.01em; }
+  .hero .sub { color: var(--ink-soft); margin-top: 6px; }
+  .status-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    border: 1px solid var(--line); border-radius: 999px;
+    background: var(--surface-raised); padding: 3px 12px;
+    font-size: 12.5px; color: var(--ink-soft);
+  }
+  .chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--match-strong); }
+  .chip.progress .dot { background: var(--match-mid); }
+  section { margin-bottom: 48px; }
+  h2 {
+    font-size: 18px; font-weight: 650; margin-bottom: 16px;
+    padding-left: 10px; border-left: 3px solid var(--accent);
+  }
+  h3 { font-size: 15px; font-weight: 650; margin: 20px 0 8px; }
+  p { margin-bottom: 10px; }
+  .muted { color: var(--ink-soft); }
+  .small { font-size: 13px; }
+  code, .mono {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 0.88em; background: var(--accent-soft);
+    padding: 1px 6px; border-radius: 4px;
+  }
+  /* フローステッパー */
+  .flow { display: flex; flex-wrap: wrap; gap: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--surface-raised); }
+  .flow .step { flex: 1 1 160px; padding: 16px; border-right: 1px solid var(--line); }
+  .flow .step:last-child { border-right: none; }
+  .flow .num { font-size: 12px; color: var(--accent); font-weight: 650; letter-spacing: 0.08em; }
+  .flow .name { font-weight: 650; margin: 2px 0 4px; }
+  .flow .desc { font-size: 12.5px; color: var(--ink-soft); line-height: 1.6; }
+  /* カード面 */
+  .card { background: var(--surface-raised); border: 1px solid var(--line); border-radius: 10px; padding: 20px 24px; }
+  .card + .card { margin-top: 12px; }
+  /* 表 */
+  table { width: 100%; border-collapse: collapse; background: var(--surface-raised); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12.5px; color: var(--ink-soft); font-weight: 650; background: var(--surface); }
+  tr:last-child td { border-bottom: none; }
+  .num-cell { font-variant-numeric: tabular-nums; font-weight: 600; }
+  /* アーキテクチャ図 */
+  .arch { border: 1px solid var(--line); border-radius: 10px; background: var(--surface-raised); padding: 20px; }
+  .arch .browser { border: 1.5px solid var(--accent); border-radius: 10px; padding: 14px; }
+  .arch .browser-label { font-size: 12px; color: var(--accent); font-weight: 650; letter-spacing: 0.06em; margin-bottom: 10px; }
+  .arch .layers { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .arch .layer { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--surface); }
+  .arch .layer b { display: block; font-size: 13px; margin-bottom: 4px; }
+  .arch .layer span { font-size: 12px; color: var(--ink-soft); line-height: 1.6; display: block; }
+  .arch .externals { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .arch .ext { border: 1px dashed var(--line); border-radius: 8px; padding: 10px 12px; font-size: 12.5px; color: var(--ink-soft); }
+  .arch .ext b { color: var(--ink); font-size: 13px; display: block; margin-bottom: 2px; }
+  .arch .arrow { text-align: center; color: var(--ink-soft); font-size: 12px; padding: 6px 0 2px; }
+  /* スコアバッジ */
+  .badge { display: inline-block; min-width: 34px; text-align: center; border-radius: 999px; color: #fff; font-size: 12.5px; font-weight: 650; padding: 1px 8px; font-variant-numeric: tabular-nums; }
+  .badge.strong { background: var(--match-strong); }
+  .badge.mid { background: var(--match-mid); }
+  .badge.weak { background: oklch(60% 0.02 250); }
+  /* 数式風 */
+  .formula { background: var(--surface-raised); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; font-variant-numeric: tabular-nums; }
+  ul { padding-left: 1.3em; margin-bottom: 10px; }
+  li { margin-bottom: 4px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  a { color: var(--accent); }
+  footer { border-top: 1px solid var(--line); padding-top: 16px; color: var(--ink-soft); font-size: 12.5px; }
+  @media (max-width: 720px) {
+    .arch .layers, .two-col, .arch .externals { grid-template-columns: 1fr; }
+    .flow { flex-direction: column; }
+    .flow .step { border-right: none; border-bottom: 1px solid var(--line); }
+    .flow .step:last-child { border-bottom: none; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+<header class="hero">
+  <h1>内容抽出（anken-match）実装レポート</h1>
+  <p class="sub">案件メールをLLMで構造化し、自社人材との最適マッチを数分で決める — ローカル完結のBYOK型SPA</p>
+  <div class="status-row">
+    <span class="chip"><span class="dot"></span>実装完了・検証済み（2026-07-05）</span>
+    <span class="chip"><span class="dot"></span>テスト 109件 / lint / build 全グリーン</span>
+    <span class="chip progress"><span class="dot"></span>コンポーネントテスト追加は別セッションで進行中</span>
+    <span class="chip"><span class="dot" style="background: var(--ink-soft)"></span>未公開（公開はユーザー判断待ち）</span>
+  </div>
+</header>
+
+<section>
+  <h2>これは何か</h2>
+  <p>SES営業に日々届く案件紹介メールを読み、要件を抜き出し、自社エンジニアのスキルセットと突き合わせて「誰を提案するか」を決める——この手作業を自動化する道具です。</p>
+  <p>メールを取り込むと、Claude APIがスキル（必須/歓迎）・単価・期間・商流・リモート可否などをJSONに構造化。社員データと照合してランキングし、提案根拠と返信メールの下書きまで生成します。データはすべてブラウザ内（IndexedDB）に保存され、サーバはありません。</p>
+</section>
+
+<section>
+  <h2>使い方 — 一本のフロー</h2>
+  <div class="flow">
+    <div class="step">
+      <div class="num">STEP 1</div>
+      <div class="name">取込</div>
+      <div class="desc">メール本文の貼り付け／.eml・.txtファイルのD&amp;D／Gmail API（読み取り専用）の3系統</div>
+    </div>
+    <div class="step">
+      <div class="num">STEP 2</div>
+      <div class="name">抽出確認</div>
+      <div class="desc">LLMが案件名・スキル・単価・商流等を構造化。原文は折りたたみで従属表示</div>
+    </div>
+    <div class="step">
+      <div class="num">STEP 3</div>
+      <div class="name">マッチ</div>
+      <div class="desc">社員全員を即時採点しランキング。上位5名はAI再ランク＋提案根拠の生成も可能</div>
+    </div>
+    <div class="step">
+      <div class="num">STEP 4</div>
+      <div class="name">提案</div>
+      <div class="desc">候補者のアピール要約とクライアント向け返信ドラフトを生成→編集→コピー→保存</div>
+    </div>
+  </div>
+  <h3>すぐ試すには</h3>
+  <p><code>npm run dev</code> で起動し、案件タブの<b>「サンプルメールで試す」</b>と人材タブの<b>「デモ社員20名を投入」</b>を押すだけ。マッチングはローカル計算なので<b>APIキー無しでもSTEP 3まで体験できます</b>。抽出・提案文の生成には設定タブで自分のAnthropic APIキーを登録します（BYOK方式・キーはこの端末にのみ保存）。</p>
+</section>
+
+<section>
+  <h2>マッチングの仕組み（ハイブリッド2段構え）</h2>
+  <div class="formula">
+    スコア = 100 × ( <b>必須スキル充足率 × 0.6</b> ＋ 歓迎スキル充足率 × 0.2 ＋ 経験年数加点 × 0.2 )
+  </div>
+  <ul style="margin-top: 12px">
+    <li><b>1段目（決定的スコアリング）</b>: API課金ゼロ・全社員を瞬時に採点。正規化辞書（40超のcanonical名＋別名）が「k8s ≡ Kubernetes」「RHEL ≡ Linux」等の表記ゆれを吸収。アサイン中の社員は既定で除外</li>
+    <li><b>2段目（LLM再ランク）</b>: 上位5名だけをClaudeに渡し、実質的なスキルの近さ（例: CCNP保持者はCCNA要件を満たす）を考慮した順位と、営業がそのまま使える提案根拠を生成 — トークンを最小限に</li>
+  </ul>
+  <p class="small muted">スコアバッジは3段階: <span class="badge strong">80</span> 70以上 ／ <span class="badge mid">55</span> 40〜69 ／ <span class="badge weak">17</span> 40未満。未充足の必須スキルは打ち消し表示で正直に示します。</p>
+</section>
+
+<section>
+  <h2>アーキテクチャ</h2>
+  <div class="arch">
+    <div class="browser">
+      <div class="browser-label">ブラウザ内で完結（サーバなし）</div>
+      <div class="layers">
+        <div class="layer">
+          <b>画面（features/）</b>
+          <span>inbox 取込・案件<br>talent 人材管理<br>matching 候補者<br>proposals 提案文<br>trends ダッシュボード<br>settings 設定</span>
+        </div>
+        <div class="layer">
+          <b>エンジン（lib/）</b>
+          <span>extraction 抽出＋検証<br>matching スコアリング<br>normalize 正規化辞書<br>proposals 提案文生成<br>mail/ 取込3系統</span>
+        </div>
+        <div class="layer">
+          <b>保存</b>
+          <span>IndexedDB<br>（案件・社員・マッチ結果）<br>localStorage<br>（APIキー等の設定）</span>
+        </div>
+      </div>
+      <div class="arrow">↓ 必要な時だけ外部APIへ（BYOK＝自分のキーで直接呼ぶ）</div>
+      <div class="externals">
+        <div class="ext"><b>Anthropic API</b>抽出・再ランク・提案文の生成時のみ。既定モデルはClaude Sonnet 5（設定で変更可）</div>
+        <div class="ext"><b>Gmail API</b>取込時のみ・readonly限定。format=raw→postal-mimeで.emlと同一経路、日本語MIMEも正しく処理。トークンはメモリのみ</div>
+      </div>
+    </div>
+  </div>
+  <p class="small muted" style="margin-top: 10px">スタック: Vite + React 19 + TypeScript(strict) + idb + postal-mime + recharts。学習管理アプリで実績のあるBYOK型SPAパターンを踏襲。</p>
+</section>
+
+<section>
+  <h2>開発体制 — エージェント役割分担（トークン最適化）</h2>
+  <table>
+    <thead><tr><th>担当</th><th>役割</th><th>成果</th></tr></thead>
+    <tbody>
+      <tr><td><b>Fable5（メイン）</b></td><td>全体設計・DESIGN.md・データモデル契約・抽出/マッチングエンジン・監査・アーキテクチャ修正</td><td>難所を直接実装、レビュー指摘の根本対処</td></tr>
+      <tr><td>Sonnet × 6体（並列）</td><td>スキャフォールド／取込UI／人材管理・候補者UI／トレンド／提案文／レビュー指摘の機械的修正・市場調査</td><td>実装の大部分を低コストで消化</td></tr>
+      <tr><td>Opus × 1体</td><td>Gmail API連携（OAuth＋日本語MIMEの難所）</td><td>14テスト付きで完遂</td></tr>
+      <tr><td>レビュー 3体</td><td>TypeScript / React / セキュリティの統合監査</td><td>CRITICAL 3・HIGH 12 を検出</td></tr>
+    </tbody>
+  </table>
+  <p class="small muted" style="margin-top: 8px">ファイル所有権を事前分割して最大3体を同時並列。サブエージェント側で約160万トークンを消化し、メインセッションは設計と監査に専念。</p>
+</section>
+
+<section>
+  <h2>品質 — 監査で見つけて直したこと</h2>
+  <div class="card">
+    <h3 style="margin-top: 0">最重要だった指摘: 永続化の所有者不在</h3>
+    <p class="small">並列実装の継ぎ目で、同じ案件データを複数パネルが別々にDBへ書き込む設計になっており、実機E2Eでも「マッチ済みなのに提案パネルが未マッチ表示」という競合を観測。<b>永続化はInboxViewの単一所有・マッチ結果はProjectDetailが単一ソースとして配布</b>する形に再設計して根治しました（eslint抑止コメントも全廃）。</p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top: 0">その他の主な対処</h3>
+    <ul class="small" style="margin-bottom: 0">
+      <li>プロンプトインジェクション対策: 抽出プロンプトに耐性文言＋出力スキーマ厳格検証＋「AI生成・送信前確認」の注記</li>
+      <li>CSPメタタグ導入、TypeScript strict化（型エラー0）、react-hooks lint体制（exhaustive-deps）導入</li>
+      <li>アクセシビリティ: テーブル行のネストinteractive解消・window.confirm全廃（インライン確認UIへ統一）</li>
+      <li>Gmail取込の部分失敗耐性（1通の失敗で全滅しない）、モバイル幅での横はみ出し修正</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>検証結果</h2>
+  <table>
+    <thead><tr><th>項目</th><th>結果</th></tr></thead>
+    <tbody>
+      <tr><td>ユニットテスト（vitest）</td><td class="num-cell">9ファイル・109件 全パス（抽出パース／スコアリング／正規化／eml・Gmail変換／CSV取込／トレンド集計）</td></tr>
+      <tr><td>lint / 型 / build</td><td>oxlint＋eslint(react-hooks) 違反0 ／ tsc strict エラー0 ／ vite build 成功</td></tr>
+      <tr><td>実機E2E（プレビュー）</td><td>サンプル取込→抽出→マッチ（1位80点）→提案候補選択、ステータス遷移、トレンド描画、モバイル1カラム化を実走確認</td></tr>
+      <tr><td>セキュリティ</td><td>npm audit 0件・秘密情報ハードコード無し・XSSシンク無し・トークン非永続をテストで担保</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>ドキュメントと今後</h2>
+  <div class="two-col">
+    <div class="card">
+      <h3 style="margin-top: 0">読むもの</h3>
+      <ul class="small" style="margin-bottom: 0">
+        <li><code>README.md</code> — 使い方・Gmail連携セットアップ手順</li>
+        <li><code>DESIGN.md</code> — デザイン規約「静かな選考室」</li>
+        <li><code>docs/活用提案.md</code> — 応用例8件・既存サービス実調査5件・自作が妥当な規模の目安（営業1〜3名・月200通まで）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top: 0">残課題</h3>
+      <ul class="small" style="margin-bottom: 0">
+        <li>コンポーネント層テスト — <b>別セッションで追加作業中</b></li>
+        <li>Gmail取込の重複排除（messageId方式・コードに将来課題として明記済み）</li>
+        <li>公開（GitHub Pages等）— ご判断待ち。公開時はpublic/private確認から</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  内容抽出（anken-match）実装レポート — 2026-07-05 ／ 場所: <span class="mono">~/Documents/claude/内容抽出アプリ</span> ／ 起動: <span class="mono">npm run dev</span>
+</footer>
+
+</main>
+</body>
+</html>

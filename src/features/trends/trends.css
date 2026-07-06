@@ -1,0 +1,114 @@
+/* trendsフィーチャー専用スタイル。トークンはsrc/styles/tokens.cssを使用。
+   このファイルはfeatures/trends配下でのみimportされる（他featureに影響しない）。 */
+
+.trends-view {
+  display: flex;
+  flex-direction: column;
+}
+
+.trends-section-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm) var(--space-lg);
+}
+
+.trends-section-header h2 {
+  margin: 0;
+}
+
+.trends-period-picker {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.trends-period-picker .btn-quiet {
+  border: 1px solid transparent;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8125rem;
+}
+
+.trends-period-picker .btn-quiet.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.trends-subheading {
+  margin: var(--space-lg) 0 var(--space-sm);
+  font-size: 15px;
+  font-weight: 650;
+  color: var(--ink-soft);
+}
+
+/* --- 増減バッジ --- */
+
+.trend-badge-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-lg);
+}
+
+.trend-badge-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
+  font-size: 0.875rem;
+}
+
+.trend-badge-name {
+  color: var(--ink);
+}
+
+.trend-badge-delta {
+  font-weight: 650;
+}
+
+/* --- リモート内訳 --- */
+
+.remote-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  max-width: 480px;
+}
+
+.remote-breakdown-bar {
+  display: flex;
+  width: 100%;
+  height: 10px;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  background: var(--line);
+}
+
+.remote-breakdown-segment {
+  height: 100%;
+}
+
+.remote-breakdown-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-md);
+}
+
+.remote-breakdown-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.remote-breakdown-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}

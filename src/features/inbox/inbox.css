@@ -1,0 +1,282 @@
+/* inbox feature 専用スタイル。DESIGN.md準拠: 影なし、罫線と余白のみで階層を作る。 */
+
+/* --- ステッパー --- */
+
+.stepper {
+  display: flex;
+  gap: var(--space-md);
+  list-style: none;
+  margin: 0 0 var(--space-lg);
+  padding: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.stepper-item {
+  display: flex;
+}
+
+.stepper-button {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--ink-soft);
+  padding: var(--space-sm) 0.1rem;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.stepper-button:not(:disabled):hover {
+  color: var(--ink);
+}
+
+.stepper-item--current .stepper-button {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 650;
+}
+
+.stepper-item--done .stepper-button {
+  color: var(--ink);
+}
+
+.stepper-index {
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+
+.stepper-item--current .stepper-index,
+.stepper-item--done .stepper-index {
+  color: inherit;
+}
+
+/* --- 案件一覧テーブル --- */
+
+.project-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.project-table th {
+  text-align: left;
+  font-weight: 650;
+  color: var(--ink-soft);
+  font-size: 0.8125rem;
+  padding: var(--space-sm);
+  border-bottom: 1px solid var(--line);
+}
+
+.project-table td {
+  padding: var(--space-sm);
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.project-row {
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.project-row:has(.project-title-button:hover),
+.project-row:has(.project-title-button:focus-visible) {
+  background: var(--accent-soft);
+}
+
+.project-title-cell {
+  padding: 0 !important;
+}
+
+.project-title-button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  padding: var(--space-sm);
+}
+
+.project-title-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.delete-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--danger);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+.skill-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  align-items: center;
+}
+
+.status-badge {
+  display: inline-block;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.status-badge--matched,
+.status-badge--proposed {
+  color: var(--accent);
+}
+
+.status-badge--closed {
+  color: var(--ink-soft);
+}
+
+/* --- 取込パネル --- */
+
+.import-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.import-panel-paste {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  align-items: flex-start;
+}
+
+.import-panel-label {
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.import-panel-dropzone {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.import-panel-dropzone--over {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.import-panel-gmail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--line);
+}
+
+/* --- 案件詳細 --- */
+
+.project-detail-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.project-detail-title {
+  font-size: 18px;
+}
+
+.project-detail-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+@media (max-width: 800px) {
+  .project-detail-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.project-detail-column {
+  min-width: 0;
+}
+
+.project-detail-raw {
+  margin-top: var(--space-xl);
+  border-top: 1px solid var(--line);
+  padding-top: var(--space-md);
+}
+
+.project-detail-raw summary {
+  cursor: pointer;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+}
+
+.project-detail-raw-meta {
+  margin-top: var(--space-sm);
+}
+
+.project-detail-raw-body {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--ink);
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-top: var(--space-sm);
+}
+
+/* --- 抽出結果ビュー --- */
+
+.extracted-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.extracted-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.extracted-title {
+  font-size: 18px;
+}
+
+.extracted-summary-text {
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.definition-list {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-xs) var(--space-md);
+  margin: 0;
+}
+
+.definition-list dt {
+  color: var(--ink-soft);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+.definition-list dd {
+  margin: 0;
+}
+
+.extraction-skeleton {
+  color: var(--ink-soft);
+}
